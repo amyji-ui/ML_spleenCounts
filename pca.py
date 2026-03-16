@@ -3,8 +3,7 @@ import numpy as np
 def PCA(count_matrix, k):
     x_centered = CentreFeatures(count_matrix)
 
-    # I tried to make svd from scratch but my brain explodes so for this we use numpy function for now. 
-    U, S, Vt = np.linalg.svd(x_centered, full_matrices=False)
+    U, S, Vt = svd(x_centered)
 
     Uk = U[:, 0:k] # gene x k
     Sk = S[0:k] # length k
@@ -67,9 +66,53 @@ def CentreFeatures(count_matrix):
     
     return np.asarray(count_matrix, dtype=float)
 
-'''
-Create the Diagonal matrix. This is how much we 'scale' the vectors. 
-'''
+
+def svd(X, tol=1e-10):
+ 
+    X = np.asarray(X, dtype=float)
+
+    # form X^T X
+    XtX = X.T @ X
+
+    # eigendecomposition of X^T X
+    # Since XtX is symmetric, use eigh
+    eigvals, V = np.linalg.eigh(XtX)
+
+    # sort eigenvalues/vectors in descending order
+    idx = np.argsort(eigvals)[::-1]
+    eigvals = eigvals[idx]
+    V = V[:, idx]
+
+    # remove tiny negative values caused by numerical error
+    eigvals[eigvals < 0] = 0.0
+
+    # singular values is the square root of eigenvalues.
+    S_all = np.sqrt(eigvals)
+
+    # keep only nonzero singular values
+    keep = S_all > tol
+    S = S_all[keep]
+    V = V[:, keep]
+
+    # compute U from u_i = X v_i / sigma_i
+    U_cols = []
+    for i in range(len(S)):
+        vi = V[:, i]
+        sigma = S[i]
+        ui = X @ vi / sigma
+        # normalize
+        ui = ui / np.linalg.norm(ui)
+        U_cols.append(ui)
+
+    if len(U_cols) == 0:
+        U = np.empty((X.shape[0], 0))
+        Vt = np.empty((0, X.shape[1]))
+    else:
+        U = np.column_stack(U_cols)
+        Vt = V.T
+
+    return U, S, Vt
+
 def CreateDiagonalMatrix(values):
     k = len(values)
     Sigma = []
