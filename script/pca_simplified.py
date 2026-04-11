@@ -1,63 +1,61 @@
 import numpy as np
 from scipy.sparse import issparse
 
-def PCA(count_matrix, k, scale=False):
+def PCA_svd(X, k, scale=False):
     """
-    PCA for a matrix with rows = genes, columns = cells.
+    PCA for input matrix with rows = cells, columns = genes.
+    Uses SVD directly on the centered data matrix.
 
     Returns
     -------
-    cell_embeddings : ndarray, shape (num_cells, k)
-        Coordinates of each cell in PC space.
-    pc_loadings : ndarray, shape (num_genes, k)
-        Top-k principal directions (eigenvectors).
-    explained_variance : ndarray, shape (k,)
-        Variance explained by each selected PC.
-    explained_variance_ratio : ndarray, shape (k,)
-        Fraction of total variance explained by each selected PC.
+    cell_embeddings : (n_cells, k)
+    pc_loadings : (n_genes, k)
+    explained_variance : (k,)
+    explained_variance_ratio : (k,)
     """
-    X = count_matrix
-
     if issparse(X):
         X = X.toarray()
     else:
-        X = np.array(X, dtype=float)
+        X = np.asarray(X, dtype=float)
 
-    # Convert from genes x cells to cells x genes
-    X = X.T
-
-    # Center each gene (column) across cells
+    # center each gene across cells
     X_centered = X - np.mean(X, axis=0, keepdims=True)
 
-    # Optional: standardize each gene
+    # optional standardization
     if scale:
         std = np.std(X_centered, axis=0, ddof=1, keepdims=True)
         std[std == 0] = 1.0
         X_centered = X_centered / std
 
-    # Covariance matrix of genes/features
-    # cov_matrix = np.cov(X_centered, rowvar=False) (np.cov center it for us. )
-    # S = X_c.T @ X_c / (N-1)
-    cov_matrix = X_centered.T @ X_centered / (X_centered.shape[0] - 1)
+    # SVD: X = U S Vt
+    U, S, Vt = np.linalg.svd(X_centered, full_matrices=False)
 
-    # Eigen decomposition
-    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+    # keep top k
+    U_k = U[:, :k]
+    S_k = S[:k]
+    Vt_k = Vt[:k, :]
 
-    # Sort in descending order
-    idx = np.argsort(eigenvalues)[::-1]
-    eigenvalues = eigenvalues[idx]
-    eigenvectors = eigenvectors[:, idx]
+    # cell embeddings = U_k * S_k
+    cell_embeddings = U_k * S_k
 
-    # Keep top k
-    explained_variance = eigenvalues[:k]
-    pc_loadings = eigenvectors[:, :k]
+    # gene loadings = columns are principal directions
+    pc_loadings = Vt_k.T
 
-    # Project cells onto top k PCs
-    cell_embeddings = X_centered @ pc_loadings
+    # explained variance from singular values
+    n_samples = X_centered.shape[0]
+    explained_variance = (S_k ** 2) / (n_samples - 1)
 
-    """
-    # Explained variance ratio
-    total_variance = np.sum(eigenvalues)
-    explained_variance_ratio = explained_variance / total_variance
-    """
-    return cell_embeddings, pc_loadings
+    all_explained_variance = (S ** 2) / (n_samples - 1)
+    explained_variance_ratio = explained_variance / np.sum(all_explained_variance)
+
+    return cell_embeddings, pc_loadings, explained_variance, explained_variance_ratio
+
+test_matrix = [
+    [5, 4, 3, 2],   # cell1
+    [1, 2, 3, 4],   # cell2
+    [2, 2, 2, 2]    # cell3
+]
+
+#cell_embeddings = PCA(test_matrix, 2)
+#print(cell_embeddings)
+
