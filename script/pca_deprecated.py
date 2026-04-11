@@ -68,15 +68,25 @@ def CentreFeatures(count_matrix):
 
 
 def svd(X, tol=1e-10):
+    """
+    Compute reduced SVD of X using eigendecomposition of X.T @ X.
+
+    U : ndarray, shape (m, r)
+        Left singular vectors.
+    S : ndarray, shape (r,)
+        Singular values in descending order.
+    Vt : ndarray, shape (r, n)
+        Right singular vectors transposed.
+    """
  
     X = np.asarray(X, dtype=float)
 
     # form X^T X
     XtX = X.T @ X
 
-    # eigendecomposition of X^T X
-    # Since XtX is symmetric, use eigh
-    eigvals, V = np.linalg.eigh(XtX)
+    # eigendecomposition of X^T X. eigvals.shape = n; V.shape() = n*n
+    # Right singular vectors are just the eigenvector of X^TX
+    eigvals, V = np.linalg.eigh(XtX) # use eigh because X^TX is symetric.
 
     # sort eigenvalues/vectors in descending order
     idx = np.argsort(eigvals)[::-1]
@@ -94,13 +104,12 @@ def svd(X, tol=1e-10):
     S = S_all[keep]
     V = V[:, keep]
 
-    # compute U from u_i = X v_i / sigma_i
+    # compute Left singular vectors U from u_i = ( X * v_i ) / sigma_i
     U_cols = []
     for i in range(len(S)):
-        vi = V[:, i]
-        sigma = S[i]
-        ui = X @ vi / sigma
-        # normalize
+        vi = V[:, i] # column i of V is v_i
+        sigma = S[i] # item i of S is sigma_i
+        ui = X @ vi / sigma 
         ui = ui / np.linalg.norm(ui)
         U_cols.append(ui)
 
