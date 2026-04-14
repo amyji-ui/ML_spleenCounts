@@ -2,6 +2,8 @@ from script.preprocessing import run_preprocessing_pipeline
 from script.HVG import select_hvg_by_variance, apply_hvg_selection
 from script.pca_simplified import PCA_svd
 from script.SVM import fit_svm_and_save
+from script.kNN import fit_knn
+from script.kNN_pack import fit_knn_pack
 
 def main():
     results = run_preprocessing_pipeline(
@@ -68,6 +70,38 @@ def main():
     print("Saved model to:", svm_results["model_path"])
     print("Saved summary to:", svm_results["summary_path"])
     print("Test accuracy:", svm_results["test_accuracy"])
+
+    # Run kNN (scratch implementation)
+    knn_results = fit_knn(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7,
+        metric="euclidean",
+        n_cv_folds=5,
+    )
+ 
+    print("KNN Test accuracy:", knn_results["test_accuracy"])
+    print("KNN Classification Report:")
+    print(knn_results["classification_report"])
+    print("KNN Confusion Matrix:")
+    print(knn_results["confusion_matrix"])
+    print("KNN CV mean ± std:", f"{knn_results['cv_mean']:.4f} ± {knn_results['cv_std']:.4f}")
+
+    # Run kNN (package version)
+    knn_pack_results = fit_knn_pack(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7
+    )
+    print("KNN Pack Test accuracy:", knn_pack_results["test_accuracy"])
+    print("KNN Pack Classification Report:")
+    print(knn_pack_results["classification_report"])
+    print("KNN Pack Confusion Matrix:")
+    print(knn_pack_results["confusion_matrix"])
 
 if __name__ == "__main__":
     main()
