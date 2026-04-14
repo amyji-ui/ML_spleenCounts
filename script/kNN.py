@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from collections import Counter
+from sklearn.metrics import classification_report
 
 class KNNClassifier:
     def __init__(self, k=3, metric='euclidean'):
@@ -153,7 +154,7 @@ def _binary_prc(scores, y_binary):
         recalls.append(r)
 
     precisions = np.array([1.0] + precisions)
-    recalls = np.arra([0.0] + recalls)
+    recalls = np.array([0.0] + recalls)
     ap = float(np.sum((recalls[1:] - recalls[:-1]) * precisions[1:]))
     return recalls, precisions, ap
 
@@ -264,11 +265,14 @@ def fit_knn(
             X=X_all, y=y_all, k=n_cv_folds
         )
 
+    report = classification_report(y_test, y_pred)
+
     return dict(
         model=clf,
         y_pred=y_pred,
         y_probas=y_probas,
         test_accuracy=accuracy,
+        classification_report=report,
         confusion_matrix=cm,
         metrics=prf,
         cv_scores=cv_scores,
