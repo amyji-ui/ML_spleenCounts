@@ -1,7 +1,8 @@
 from script.preprocessing import run_preprocessing_pipeline
 from script.HVG import select_hvg_by_variance, apply_hvg_selection
 from script.pca_simplified import PCA_svd
-from script.SVM import fit_svm_and_save
+from script.SVM_pk import fit_svm_and_save
+from script.SVM_scratch import fit_scratch_svm_and_save
 
 def main():
     results = run_preprocessing_pipeline(
@@ -56,7 +57,7 @@ def main():
         y_train=y_train,
         X_test=X_test_pca,
         y_test=y_test,
-        kernel="rbf",
+        kernel="linear",
         C=1.0,
         class_weight="balanced",
         max_iter=1000,
@@ -65,9 +66,19 @@ def main():
         summary_name="svm_summary.txt",
     )
 
-    print("Saved model to:", svm_results["model_path"])
-    print("Saved summary to:", svm_results["summary_path"])
-    print("Test accuracy:", svm_results["test_accuracy"])
+    scratch_svm_results = fit_scratch_svm_and_save(
+    X_train=X_train_pca,
+    y_train=y_train,
+    X_test=X_test_pca,
+    y_test=y_test,
+    learning_rate=0.001,
+    lambda_param=0.01,
+    n_iters=1000,
+    class_weight="balanced",
+    output_dir="output",
+    model_name="scratch_svm_model.joblib",
+    summary_name="scratch_svm_summary.txt",
+    )
 
 if __name__ == "__main__":
     main()

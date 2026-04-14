@@ -3,7 +3,6 @@ import joblib
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-
 def fit_svm_and_save(
     X_train,
     y_train,
