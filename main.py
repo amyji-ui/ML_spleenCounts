@@ -71,17 +71,17 @@ def main():
     )
 
     scratch_svm_results = fit_scratch_svm_and_save(
-    X_train=X_train_pca,
-    y_train=y_train,
-    X_test=X_test_pca,
-    y_test=y_test,
-    learning_rate=0.001,
-    lambda_param=0.01,
-    n_iters=1000,
-    class_weight="balanced",
-    output_dir="output",
-    model_name="scratch_svm_model.joblib",
-    summary_name="scratch_svm_summary.txt",
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        learning_rate=0.001,
+        lambda_param=0.01,
+        n_iters=1000,
+        class_weight="balanced",
+        output_dir="output",
+        model_name="scratch_svm_model.joblib",
+        summary_name="scratch_svm_summary.txt",
     )
 
     # Run kNN (scratch implementation)
