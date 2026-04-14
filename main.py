@@ -5,6 +5,7 @@ from script.SVM import fit_svm_and_save
 from script.kNN import fit_knn
 from script.kNN_pack import fit_knn_pack
 from script.random_forest import fit_random_forest
+from script.mlr import fit_multinomial_logistic
 
 def main():
     results = run_preprocessing_pipeline(
@@ -118,6 +119,20 @@ def main():
     print(rf_results["classification_report"])
     print("Random Forest Confusion Matrix:")
     print(rf_results["confusion_matrix"])
+
+    # Run multinomial logistic regression
+    mlr_results = fit_multinomial_logistic(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test
+    )
+    print("MLR Test accuracy:", mlr_results["test_accuracy"])
+    print("MLR Train accuracy:", mlr_results["train_accuracy"])
+    print("MLR Classification Report:")
+    print(mlr_results["classification_report"])
+    print("MLR Confusion Matrix:")
+    print(mlr_results["confusion_matrix"])
 
 if __name__ == "__main__":
     main()
