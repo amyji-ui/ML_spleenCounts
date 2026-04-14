@@ -4,6 +4,7 @@ from script.pca_simplified import PCA_svd
 from script.SVM import fit_svm_and_save
 from script.kNN import fit_knn
 from script.kNN_pack import fit_knn_pack
+from script.random_forest import fit_random_forest
 
 def main():
     results = run_preprocessing_pipeline(
@@ -81,7 +82,7 @@ def main():
         metric="euclidean",
         n_cv_folds=5,
     )
- 
+
     print("KNN Test accuracy:", knn_results["test_accuracy"])
     print("KNN Classification Report:")
     print(knn_results["classification_report"])
@@ -102,6 +103,21 @@ def main():
     print(knn_pack_results["classification_report"])
     print("KNN Pack Confusion Matrix:")
     print(knn_pack_results["confusion_matrix"])
+
+    # Run random forest (package version)
+    rf_results = fit_random_forest(
+        X_train=X_train_hvg,
+        y_train=y_train,
+        X_test=X_test_hvg,
+        y_test=y_test,
+        n_estimators=100,
+        random_state=42
+    )
+    print("Random Forest Test accuracy:", rf_results["test_accuracy"])
+    print("Random Forest Classification Report:")
+    print(rf_results["classification_report"])
+    print("Random Forest Confusion Matrix:")
+    print(rf_results["confusion_matrix"])
 
 if __name__ == "__main__":
     main()
