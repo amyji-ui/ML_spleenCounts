@@ -2,7 +2,9 @@ from script.preprocessing import run_preprocessing_pipeline
 from script.HVG import select_hvg_by_variance, apply_hvg_selection
 from script.pca_simplified import PCA_svd
 from script.SVM import fit_svm_and_save
-from script.kNN import fit_knn
+from script.kNN import KNNClassifier, fit_knn
+from script.prf import precision_recall_f1, save_evaluation_plots
+from script.KFoldCrossVal import run_kfold_cross_val
 from script.kNN_pack import fit_knn_pack
 from script.random_forest import fit_random_forest
 from script.mlr import fit_multinomial_logistic
@@ -81,15 +83,39 @@ def main():
         y_test=y_test,
         k=7,
         metric="euclidean",
-        n_cv_folds=5,
     )
 
-    print("KNN Test accuracy:", knn_results["test_accuracy"])
-    print("KNN Classification Report:")
+    knn_cv = run_kfold_cross_val(
+        clf_factory=lambda: KNNClassifier(k=7, metric="euclidean"),
+        X_train=X_train_pca,
+        X_test=X_test_pca,
+        y_train=y_train,
+        y_test=y_test,
+        k=5,
+        seed=42,
+        n_cv_folds=5
+    )
+
+    cm = knn_results["confusion_matrix"]
+    clf = knn_results["model"]
+    prf = precision_recall_f1(cm, clf.classes_)
+
+    save_evaluation_plots(
+        cm=cm,
+        prf=prf,
+        probas=knn_results["y_probas"],
+        y_true=y_test,
+        classes=clf.classes_,
+        output_path="qmetric/knn_evaluation.png",
+        prefix="kNN Scratch"
+    )
+
+    print("kNN Test accuracy:", knn_results["test_accuracy"])
+    print("kNN Classification Report:")
     print(knn_results["classification_report"])
-    print("KNN Confusion Matrix:")
+    print("kNN Confusion Matrix:")
     print(knn_results["confusion_matrix"])
-    print("KNN CV mean ± std:", f"{knn_results['cv_mean']:.4f} ± {knn_results['cv_std']:.4f}")
+    print("kNN CV mean ± std:", f"{knn_cv['cv_mean']:.4f} ± {knn_cv['cv_std']:.4f}")
 
     # Run kNN (package version)
     knn_pack_results = fit_knn_pack(
@@ -99,10 +125,10 @@ def main():
         y_test=y_test,
         k=7
     )
-    print("KNN Pack Test accuracy:", knn_pack_results["test_accuracy"])
-    print("KNN Pack Classification Report:")
+    print("kNN Pack Test accuracy:", knn_pack_results["test_accuracy"])
+    print("kNN Pack Classification Report:")
     print(knn_pack_results["classification_report"])
-    print("KNN Pack Confusion Matrix:")
+    print("kNN Pack Confusion Matrix:")
     print(knn_pack_results["confusion_matrix"])
 
     # Run random forest (package version)
