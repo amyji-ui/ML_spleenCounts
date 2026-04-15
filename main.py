@@ -1,7 +1,9 @@
 from script.preprocessing import run_preprocessing_pipeline
 from script.HVG import select_hvg_by_variance, apply_hvg_selection
 from script.pca_simplified import PCA_svd
-from script.SVM import fit_svm_and_save
+from script.SVM_pk import fit_svm_and_save
+from script.SVM_scratch import fit_scratch_svm_and_save
+from script.kNN import fit_knn
 from script.kNN import KNNClassifier, fit_knn
 from script.prf import precision_recall_f1, save_evaluation_plots
 from script.KFoldCrossVal import run_kfold_cross_val
@@ -62,7 +64,7 @@ def main():
         y_train=y_train,
         X_test=X_test_pca,
         y_test=y_test,
-        kernel="rbf",
+        kernel="linear",
         C=1.0,
         class_weight="balanced",
         max_iter=1000,
@@ -71,9 +73,141 @@ def main():
         summary_name="svm_summary.txt",
     )
 
-    print("Saved model to:", svm_results["model_path"])
-    print("Saved summary to:", svm_results["summary_path"])
-    print("Test accuracy:", svm_results["test_accuracy"])
+    scratch_svm_results = fit_scratch_svm_and_save(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        learning_rate=0.001,
+        lambda_param=0.01,
+        n_iters=1000,
+        class_weight="balanced",
+        output_dir="output",
+        model_name="scratch_svm_model.joblib",
+        summary_name="scratch_svm_summary.txt",
+    )
+
+    # Run kNN (scratch implementation)
+    knn_results = fit_knn(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7,
+        metric="euclidean",
+        n_cv_folds=5,
+    )
+
+    print("KNN Test accuracy:", knn_results["test_accuracy"])
+    print("KNN Classification Report:")
+    print(knn_results["classification_report"])
+    print("KNN Confusion Matrix:")
+    print(knn_results["confusion_matrix"])
+    print("KNN CV mean ± std:", f"{knn_results['cv_mean']:.4f} ± {knn_results['cv_std']:.4f}")
+
+    # Run kNN (package version)
+    knn_pack_results = fit_knn_pack(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7
+    )
+    print("KNN Pack Test accuracy:", knn_pack_results["test_accuracy"])
+    print("KNN Pack Classification Report:")
+    print(knn_pack_results["classification_report"])
+    print("KNN Pack Confusion Matrix:")
+    print(knn_pack_results["confusion_matrix"])
+
+    # Run random forest (package version)
+    rf_results = fit_random_forest(
+        X_train=X_train_hvg,
+        y_train=y_train,
+        X_test=X_test_hvg,
+        y_test=y_test,
+        n_estimators=100,
+        random_state=42
+    )
+    print("Random Forest Test accuracy:", rf_results["test_accuracy"])
+    print("Random Forest Classification Report:")
+    print(rf_results["classification_report"])
+    print("Random Forest Confusion Matrix:")
+    print(rf_results["confusion_matrix"])
+
+    # Run multinomial logistic regression
+    mlr_results = fit_multinomial_logistic(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test
+    )
+    print("MLR Test accuracy:", mlr_results["test_accuracy"])
+    print("MLR Train accuracy:", mlr_results["train_accuracy"])
+    print("MLR Classification Report:")
+    print(mlr_results["classification_report"])
+    print("MLR Confusion Matrix:")
+    print(mlr_results["confusion_matrix"])
+
+    # Run kNN (scratch implementation)
+    knn_results = fit_knn(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7,
+        metric="euclidean",
+        n_cv_folds=5,
+    )
+
+    print("KNN Test accuracy:", knn_results["test_accuracy"])
+    print("KNN Classification Report:")
+    print(knn_results["classification_report"])
+    print("KNN Confusion Matrix:")
+    print(knn_results["confusion_matrix"])
+    print("KNN CV mean ± std:", f"{knn_results['cv_mean']:.4f} ± {knn_results['cv_std']:.4f}")
+
+    # Run kNN (package version)
+    knn_pack_results = fit_knn_pack(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test,
+        k=7
+    )
+    print("KNN Pack Test accuracy:", knn_pack_results["test_accuracy"])
+    print("KNN Pack Classification Report:")
+    print(knn_pack_results["classification_report"])
+    print("KNN Pack Confusion Matrix:")
+    print(knn_pack_results["confusion_matrix"])
+
+    # Run random forest (package version)
+    rf_results = fit_random_forest(
+        X_train=X_train_hvg,
+        y_train=y_train,
+        X_test=X_test_hvg,
+        y_test=y_test,
+        n_estimators=100,
+        random_state=42
+    )
+    print("Random Forest Test accuracy:", rf_results["test_accuracy"])
+    print("Random Forest Classification Report:")
+    print(rf_results["classification_report"])
+    print("Random Forest Confusion Matrix:")
+    print(rf_results["confusion_matrix"])
+
+    # Run multinomial logistic regression
+    mlr_results = fit_multinomial_logistic(
+        X_train=X_train_pca,
+        y_train=y_train,
+        X_test=X_test_pca,
+        y_test=y_test
+    )
+    print("MLR Test accuracy:", mlr_results["test_accuracy"])
+    print("MLR Train accuracy:", mlr_results["train_accuracy"])
+    print("MLR Classification Report:")
+    print(mlr_results["classification_report"])
+    print("MLR Confusion Matrix:")
+    print(mlr_results["confusion_matrix"])
 
     # Run kNN (scratch implementation)
     knn_results = fit_knn(

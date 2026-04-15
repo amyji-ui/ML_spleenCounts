@@ -1,0 +1,34 @@
+Scratch Multiclass SVM Summary
+==============================
+
+learning_rate: 0.001
+lambda_param: 0.01
+n_iters: 1000
+class_weight: balanced
+n_train_samples: 1357
+n_test_samples: 340
+n_features: 50
+classes: ['B cell', 'T cell', 'macrophage']
+
+Train accuracy: 0.9978
+Test accuracy: 0.9882
+
+Classification report (test set):
+---------------------------------
+              precision    recall  f1-score   support
+
+      B cell     0.9961    0.9923    0.9942       260
+      T cell     0.9857    0.9857    0.9857        70
+  macrophage     0.8182    0.9000    0.8571        10
+
+    accuracy                         0.9882       340
+   macro avg     0.9333    0.9593    0.9457       340
+weighted avg     0.9888    0.9882    0.9884       340
+
+
+Confusion matrix (test set):
+----------------------------
+Labels order: ['B cell', 'T cell', 'macrophage']
+[[258   0   2]
+ [  1  69   0]
+ [  0   1   9]]

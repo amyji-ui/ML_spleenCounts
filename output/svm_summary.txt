@@ -1,23 +1,23 @@
-Kernel: rbf
+Kernel: linear
 C: 1.0
 Class weight: balanced
 Max iterations: 1000
 Classes: ['B cell', 'T cell', 'macrophage']
-Support vectors per class: [135  71  30]
+Support vectors per class: [26 26 16]
 Test accuracy: 0.988235
 
 Confusion matrix:
-[[258   0   2]
- [  1  69   0]
+[[259   0   1]
+ [  2  68   0]
  [  0   1   9]]
 
 Classification report:
               precision    recall  f1-score   support
 
-      B cell       1.00      0.99      0.99       260
-      T cell       0.99      0.99      0.99        70
-  macrophage       0.82      0.90      0.86        10
+      B cell       0.99      1.00      0.99       260
+      T cell       0.99      0.97      0.98        70
+  macrophage       0.90      0.90      0.90        10
 
     accuracy                           0.99       340
-   macro avg       0.93      0.96      0.95       340
+   macro avg       0.96      0.96      0.96       340
 weighted avg       0.99      0.99      0.99       340
