@@ -5,7 +5,6 @@ from script.SVM_pk import fit_svm_and_save
 from script.SVM_scratch import fit_scratch_svm_and_save
 from script.kNN import KNNClassifier, fit_knn
 from script.prf import precision_recall_f1, save_evaluation_plots
-from script.KFoldCrossVal import run_kfold_cross_val
 from script.kNN_pack import fit_knn_pack
 from script.random_forest import fit_random_forest
 from script.mlr import fit_multinomial_logistic
@@ -96,17 +95,6 @@ def main():
         metric="euclidean",
     )
 
-    knn_cv = run_kfold_cross_val(
-        clf_factory=lambda: KNNClassifier(k=7, metric="euclidean"),
-        X_train=X_train_pca,
-        X_test=X_test_pca,
-        y_train=y_train,
-        y_test=y_test,
-        k=5,
-        seed=42,
-        n_cv_folds=5
-    )
-
     cm = knn_results["confusion_matrix"]
     clf = knn_results["model"]
     prf = precision_recall_f1(cm, clf.classes_)
@@ -126,7 +114,6 @@ def main():
     print(knn_results["classification_report"])
     print("kNN Confusion Matrix:")
     print(knn_results["confusion_matrix"])
-    print("kNN CV mean ± std:", f"{knn_cv['cv_mean']:.4f} ± {knn_cv['cv_std']:.4f}")
 
     # Run kNN (package version)
     knn_pack_results = fit_knn_pack(
