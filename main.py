@@ -3,8 +3,7 @@ from script.HVG import select_hvg_by_variance, apply_hvg_selection
 from script.pca_simplified import PCA_svd
 from script.SVM_pk import fit_svm_and_save
 from script.SVM_scratch import fit_scratch_svm_and_save
-from script.kNN import KNNClassifier, fit_knn
-from script.prf import precision_recall_f1, save_evaluation_plots
+from script.kNN import fit_knn
 from script.kNN_pack import fit_knn_pack
 from script.random_forest import fit_random_forest
 from script.mlr import fit_multinomial_logistic
@@ -93,27 +92,8 @@ def main():
         y_test=y_test,
         k=7,
         metric="euclidean",
+        n_cv_folds=5
     )
-
-    cm = knn_results["confusion_matrix"]
-    clf = knn_results["model"]
-    prf = precision_recall_f1(cm, clf.classes_)
-
-    save_evaluation_plots(
-        cm=cm,
-        prf=prf,
-        probas=knn_results["y_probas"],
-        y_true=y_test,
-        classes=clf.classes_,
-        output_path="qmetric/knn_evaluation.png",
-        prefix="kNN Scratch"
-    )
-
-    print("kNN Test accuracy:", knn_results["test_accuracy"])
-    print("kNN Classification Report:")
-    print(knn_results["classification_report"])
-    print("kNN Confusion Matrix:")
-    print(knn_results["confusion_matrix"])
 
     # Run kNN (package version)
     knn_pack_results = fit_knn_pack(

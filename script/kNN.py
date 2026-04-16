@@ -1,8 +1,8 @@
-import os
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
+from script.KFoldCrossVal import run_kfold_cross_val
 from collections import Counter
+from script.prf import precision_recall_f1, save_evaluation_plots
+from pathlib import Path
 from sklearn.metrics import classification_report
 
 class KNNClassifier:
@@ -79,24 +79,78 @@ def fit_knn(
         X_test,
         y_test,
         k=7,
-        metric="euclidean"
+        metric="euclidean",
+        n_cv_folds=5,
+        output_dir="output",
+        summary_name="scratch_knn_summary.txt",
 ):
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    cv = run_kfold_cross_val(
+        clf_factory=lambda: KNNClassifier(k=k, metric=metric),
+        X_train=X_train,
+        y_train=y_train,
+        n_cv_folds=n_cv_folds
+    )
+
     clf = KNNClassifier(k=k, metric=metric)
     clf.fit(X_train, y_train)
 
-    y_pred = clf.predict(X_test)
+    y_test_pred = clf.predict(X_test)
     y_probas = clf.predict_proba(X_test)
-    accuracy = clf.score(X_test, y_test)
+    train_accuracy = clf.score(X_train, y_train)
+    test_accuracy = clf.score(X_test, y_test)
 
-    cm = confusion_matrix(y_test, y_pred, clf.classes_)
+    cm = confusion_matrix(y_test, y_test_pred, clf.classes_)
+    prf = precision_recall_f1(cm, clf.classes_)
 
-    report = classification_report(y_test, y_pred)
+    save_evaluation_plots(
+        cm=cm,
+        prf=prf,
+        probas=y_probas,
+        y_true=y_test,
+        classes=clf.classes_,
+        output_path="qmetric/knn_evaluation.png",
+        prefix="kNN Scratch"
+    )
+    
+    summary_path = output_dir / summary_name
+    with open(summary_path, "w") as f:
+        f.write("Scratch kNN Summary\n")
+        f.write("==============================\n\n")
+        f.write(f"k: {k}\n")
+        f.write(f"metric: {metric}\n")
+        f.write(f"n_cv_folds: {n_cv_folds}\n")
+        f.write(f"n_train_samples: {X_train.shape[0]}\n")
+        f.write(f"n_test_samples: {X_test.shape[0]}\n")
+        f.write(f"n_features: {X_train.shape[1]}\n")
+        f.write(f"classes: {list(clf.classes_)}\n\n")
+
+        f.write(f"CV mean: {cv['cv_mean']:.4f}\n")
+        f.write(f"CV std: {cv['cv_std']:.4f}\n\n")
+
+        f.write(f"Train accuracy: {train_accuracy:.4f}\n")
+        f.write(f"Test accuracy: {test_accuracy:.4f}\n\n")
+
+        f.write("Classification report (test set):\n")
+        f.write("---------------------------------\n")
+        f.write(classification_report(y_test, y_test_pred, digits=4))
+        f.write("\n\n")
+
+        f.write("Confusion matrix (test set):\n")
+        f.write("----------------------------\n")
+        f.write(f"Labels order: {list(clf.classes_)}\n")
+        f.write(np.array2string(cm))
+        f.write("\n")
 
     return dict(
         model=clf,
-        y_pred=y_pred,
+        y_pred=y_test_pred,
         y_probas=y_probas,
-        test_accuracy=accuracy,
-        classification_report=report,
-        confusion_matrix=cm
+        test_accuracy=test_accuracy,
+        cv_mean=cv["cv_mean"],
+        cv_std=cv["cv_std"],
+        classification_report=classification_report,
+        cm=cm
     )
