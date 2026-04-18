@@ -116,7 +116,8 @@ def main():
         X_test=X_test_hvg,
         y_test=y_test,
         n_estimators=100,
-        random_state=42
+        random_state=42,
+        n_cv_folds=5
     )
     print("Random Forest Test accuracy:", rf_results["test_accuracy"])
     print("Random Forest Classification Report:")
