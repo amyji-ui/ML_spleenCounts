@@ -130,10 +130,10 @@ def main():
         X_train=X_train_pca,
         y_train=y_train,
         X_test=X_test_pca,
-        y_test=y_test
+        y_test=y_test,
+        n_cv_folds=5
     )
     print("MLR Test accuracy:", mlr_results["test_accuracy"])
-    print("MLR Train accuracy:", mlr_results["train_accuracy"])
     print("MLR Classification Report:")
     print(mlr_results["classification_report"])
     print("MLR Confusion Matrix:")
