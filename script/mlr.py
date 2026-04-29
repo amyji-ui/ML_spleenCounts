@@ -33,7 +33,7 @@ def fit_multinomial_logistic(X_train, y_train, X_test, y_test, max_iter=5000, C=
         probas=y_probas,
         y_true=y_test,
         classes=classes,
-        output_path="output/multinomial_logistic_evaluation.png",
+        output_path="qmetric/multinomial_logistic_evaluation.png",
         prefix="Multinomial Logistic"
     )
 
