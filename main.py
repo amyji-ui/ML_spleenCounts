@@ -55,7 +55,7 @@ def main():
     print("X_train_pca shape:", X_train_pca.shape)
     print("X_test_pca shape:", X_test_pca.shape)
 
-    # Run svm (package version)
+    # Run svm (package)
     svm_results = fit_svm_and_save(
         X_train=X_train_pca,
         y_train=y_train,
@@ -70,6 +70,7 @@ def main():
         summary_name="svm_summary.txt",
     )
 
+    # Run svm (scratch implementation)
     scratch_svm_results = fit_scratch_svm_and_save(
         X_train=X_train_pca,
         y_train=y_train,
@@ -95,7 +96,7 @@ def main():
         n_cv_folds=5
     )
 
-    # Run kNN (package version)
+    # Run kNN (package) 
     knn_pack_results = fit_knn_pack(
         X_train=X_train_pca,
         y_train=y_train,
@@ -109,7 +110,7 @@ def main():
     print("kNN Pack Confusion Matrix:")
     print(knn_pack_results["confusion_matrix"])
 
-    # Run random forest (package version)
+    # Run random forest (package)
     rf_results = fit_random_forest(
         X_train=X_train_hvg,
         y_train=y_train,
@@ -125,7 +126,7 @@ def main():
     print("Random Forest Confusion Matrix:")
     print(rf_results["confusion_matrix"])
 
-    # Run multinomial logistic regression
+    # Run multinomial logistic regression (package)
     mlr_results = fit_multinomial_logistic(
         X_train=X_train_pca,
         y_train=y_train,

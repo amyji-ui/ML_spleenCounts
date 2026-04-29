@@ -148,7 +148,8 @@ class MulticlassSVM:
         best_class_indices = np.argmax(scores, axis=1)
         return self.classes_[best_class_indices]
 
-# Helper 
+# =============== Helper functions =====================
+# this should probably go to a util.py but I'm too lazy.
 from pathlib import Path
 import joblib
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
