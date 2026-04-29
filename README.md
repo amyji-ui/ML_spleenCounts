@@ -4,6 +4,9 @@ A machine-learning project for classifying spleen single-cell data using several
 
 Methods implemented from scratch: PCA, SVM and KNN.
 
+# Data
+unzip the data.zip file and leave the data folder in the root directory. See Directory tree for reference.
+
 ## Directory Tree
 
 ```text
