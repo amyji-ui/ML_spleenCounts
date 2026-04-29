@@ -1,0 +1,12 @@
+data/
+__pycache__/
+
+.vscode/settings.json
+
+.venv
+
+pyproject.toml
+uv.lock
+.python-version
+
+*joblib/

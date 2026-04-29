@@ -1,0 +1,37 @@
+Random Forest Summary
+==============================
+
+n_estimators: 100
+random_state: 42
+class_weight: balanced
+n_cv_folds: 5
+n_train_samples: 1357
+n_test_samples: 340
+n_features: 3000
+classes: ['B cell', 'T cell', 'macrophage']
+
+CV mean: 0.9867
+CV std: 0.0050
+
+Train accuracy: 1.0000
+Test accuracy: 0.9912
+
+Classification report (test set):
+---------------------------------
+              precision    recall  f1-score   support
+
+      B cell     1.0000    0.9923    0.9961       260
+      T cell     0.9722    1.0000    0.9859        70
+  macrophage     0.9000    0.9000    0.9000        10
+
+    accuracy                         0.9912       340
+   macro avg     0.9574    0.9641    0.9607       340
+weighted avg     0.9913    0.9912    0.9912       340
+
+
+Confusion matrix (test set):
+----------------------------
+Labels order: ['B cell', 'T cell', 'macrophage']
+[[258   1   1]
+ [  0  70   0]
+ [  0   1   9]]

@@ -1,0 +1,36 @@
+Scratch kNN Summary
+==============================
+
+k: 7
+metric: euclidean
+n_cv_folds: 5
+n_train_samples: 1357
+n_test_samples: 340
+n_features: 50
+classes: ['B cell', 'T cell', 'macrophage']
+
+CV mean: 0.9750
+CV std: 0.0100
+
+Train accuracy: 0.9956
+Test accuracy: 0.9912
+
+Classification report (test set):
+---------------------------------
+              precision    recall  f1-score   support
+
+      B cell     0.9961    0.9923    0.9942       260
+      T cell     1.0000    0.9857    0.9928        70
+  macrophage     0.8333    1.0000    0.9091        10
+
+    accuracy                         0.9912       340
+   macro avg     0.9432    0.9927    0.9654       340
+weighted avg     0.9921    0.9912    0.9914       340
+
+
+Confusion matrix (test set):
+----------------------------
+Labels order: ['B cell', 'T cell', 'macrophage']
+[[258   0   2]
+ [  1  69   0]
+ [  0   0  10]]
