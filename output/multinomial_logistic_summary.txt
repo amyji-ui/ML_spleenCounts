@@ -1,0 +1,36 @@
+Multinomial Logistic Regression Summary
+==============================
+
+C: 1.0
+max_iter: 5000
+n_cv_folds: 5
+n_train_samples: 1357
+n_test_samples: 340
+n_features: 50
+classes: ['B cell', 'T cell', 'macrophage']
+
+CV mean: 0.9948
+CV std: 0.0044
+
+Train accuracy: 1.0000
+Test accuracy: 0.9912
+
+Classification report (test set):
+---------------------------------
+              precision    recall  f1-score   support
+
+      B cell     0.9962    0.9962    0.9962       260
+      T cell     0.9857    0.9857    0.9857        70
+  macrophage     0.9000    0.9000    0.9000        10
+
+    accuracy                         0.9912       340
+   macro avg     0.9606    0.9606    0.9606       340
+weighted avg     0.9912    0.9912    0.9912       340
+
+
+Confusion matrix (test set):
+----------------------------
+Labels order: ['B cell', 'T cell', 'macrophage']
+[[259   0   1]
+ [  1  69   0]
+ [  0   1   9]]
